@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.datautils.shoppingcart.FileShoppingCart;
 import org.irods.jargon.datautils.shoppingcart.ShoppingCartService;
@@ -211,4 +213,45 @@ public class ShoppingCartApiController {
 			throw e;
 		}
 	}
+
+	/**
+	 * Return an inventory of the available indexes
+	 * 
+	 * @param request {@link HttpServletRequest}
+	 * @return {@code String} with json
+	 * @throws DataGridException {@link DataGridException}
+	 */
+	@RequestMapping(value = "/indexes")
+	@ResponseBody
+	public String retrieveIndexes(final HttpServletRequest request) throws DataGridException {
+
+		log.info("retrieveIndexes()");
+		ExportIndexInventory exportIndexInventory = pluggableExportWrapperService.getExportIndexInventory();
+
+		ExportSchemaListing exportSchema = new ExportSchemaListing();
+		for (String key : exportIndexInventory.getIndexInventoryEntries().keySet()) {
+			ExportIndexInventoryEntry indexInventoryEntry = exportIndexInventory.getIndexInventoryEntries().get(key);
+			for (IndexSchemaDescription desrc : indexInventoryEntry.getIndexInformation().getIndexes()) {
+				ExportSchemaEntry exportSchemaEntry = new ExportSchemaEntry();
+				exportSchemaEntry.setEndpointUrl(indexInventoryEntry.getEndpointUrl());
+				exportSchemaEntry.setSchemaDescription(desrc.getInfo());
+				exportSchemaEntry.setSchemaId(desrc.getId());
+				exportSchemaEntry.setSchemaName(desrc.getName());
+				exportSchema.getExportSchemaEntry().add(exportSchemaEntry);
+			}
+		}
+		String jsonString;
+
+		try {
+			jsonString = mapper.writeValueAsString(exportSchema);
+			log.debug("jsonString: {}", jsonString);
+		} catch (JsonProcessingException e) {
+			log.error("Could not parse index inventory: {}", e.getMessage());
+			throw new DataGridException("exception in json parsing", e);
+		}
+		
+		return jsonString;
+
+	}
+
 }

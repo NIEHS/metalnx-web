@@ -265,16 +265,28 @@
 					<span th:text="#{collections.upload.button.label}"></span>
 				</div>
 			</a>
+<<<<<<< HEAD
 			<a role="button" class="btn btn-default icon-btn" id="galleryIcon"
 				th:href="'/metalnx/gallery?path='+${encodedCurrentPath}"
 				title="Gallery View"> <i class="fa fa-th" aria-hidden="true"></i>
-			</a>
+=======
+			
+			<th:block th:if="${globalConfig.isPluggableShoppingCartEnabled()}">
+				
 			<a role="button" class="btn btn-default icon-btn"
-				id="cartIcon"
-				title="Cart"
-				aria-label="Cart"
-				th:href="'/metalnx/shoppingCart/'"> 
-				<i class="fa fa-shopping-cart fa-color"></i>
+					id="cartIcon"
+					title="Cart"
+					aria-label="Cart"
+					th:href="'/metalnx/shoppingCart/'"> 
+					<i class="fa fa-shopping-cart fa-color"></i>
+				</a>
+			</th:block>
+			<a role="button" class="btn btn-default icon-btn"
+			id="galleryIcon"
+			th:href="'/metalnx/gallery?path='+${encodedCurrentPath}"
+			title="Gallery View">
+			<i class="fa fa-th" aria-hidden="true"></i>
+>>>>>>> 2a7d248d (157 wip add shopping cart property and export wrapper service)
 			</a>
 
 			<th:block th:if="${globalConfig.isPluggableShoppingCartEnabled()}">
