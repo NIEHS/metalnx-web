@@ -215,43 +215,47 @@ public class ShoppingCartApiController {
 	}
 
 	/**
-	 * Return an inventory of the available indexes
+	 * Return information of the available publishing plugin
 	 * 
 	 * @param request {@link HttpServletRequest}
 	 * @return {@code String} with json
 	 * @throws DataGridException {@link DataGridException}
 	 */
-	@RequestMapping(value = "/indexes")
+	@RequestMapping(value = "/info")
 	@ResponseBody
-	public String retrieveIndexes(final HttpServletRequest request) throws DataGridException {
+	public String retrievePublishingInfo(final HttpServletRequest request) throws DataGridException {
 
-		log.info("retrieveIndexes()");
-		ExportIndexInventory exportIndexInventory = pluggableExportWrapperService.getExportIndexInventory();
+		log.info("retrievePublishingInfo()");
 
-		ExportSchemaListing exportSchema = new ExportSchemaListing();
-		for (String key : exportIndexInventory.getIndexInventoryEntries().keySet()) {
-			ExportIndexInventoryEntry indexInventoryEntry = exportIndexInventory.getIndexInventoryEntries().get(key);
-			for (IndexSchemaDescription desrc : indexInventoryEntry.getIndexInformation().getIndexes()) {
-				ExportSchemaEntry exportSchemaEntry = new ExportSchemaEntry();
-				exportSchemaEntry.setEndpointUrl(indexInventoryEntry.getEndpointUrl());
-				exportSchemaEntry.setSchemaDescription(desrc.getInfo());
-				exportSchemaEntry.setSchemaId(desrc.getId());
-				exportSchemaEntry.setSchemaName(desrc.getName());
-				exportSchema.getExportSchemaEntry().add(exportSchemaEntry);
-			}
+		PublishingIndexInventory publishingIndexInventory = pluggablePublishingWrapperService
+				.getPublishingIndexInventory();
+
+		PlublishingSchemaListing publishingschema = new PlublishingSchemaListing();
+		for (String key : publishingIndexInventory.getPublishingInventoryEntries().keySet()) {
+			PublishingInventoryEntry publishingInventoryEntry = publishingIndexInventory.getPublishingInventoryEntries()
+					.get(key);
+			PlublishingSchemaEntry publishingSchemaEntry = new PlublishingSchemaEntry();
+			publishingSchemaEntry.setEndpointUrl(publishingInventoryEntry.getEndpointUrl());
+			publishingSchemaEntry
+					.setSchemaDescription(publishingInventoryEntry.getPublishingEndpointDescription().getInfo());
+			publishingSchemaEntry.setSchemaId(publishingInventoryEntry.getPublishingEndpointDescription().getId());
+			publishingSchemaEntry.setSchemaName(publishingInventoryEntry.getPublishingEndpointDescription().getName());
+			publishingSchemaEntry.setResponseType(publishingInventoryEntry.getPublishingEndpointDescription()
+					.getResponseType().getResponseType().getValue());
+			publishingschema.getPublishingSchemaEntry().add(publishingSchemaEntry);
 		}
+
 		String jsonString;
 
 		try {
-			jsonString = mapper.writeValueAsString(exportSchema);
-			log.debug("jsonString: {}", jsonString);
+			jsonString = mapper.writeValueAsString(publishingschema);
+			log.debug("jsonString:{}", jsonString);
 		} catch (JsonProcessingException e) {
 			log.error("Could not parse index inventory: {}", e.getMessage());
 			throw new DataGridException("exception in json parsing", e);
 		}
-		
-		return jsonString;
 
+		return jsonString;
 	}
 
 }
