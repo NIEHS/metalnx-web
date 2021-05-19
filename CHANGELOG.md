@@ -38,6 +38,11 @@ The removal of the PostgreSQL database is particularly important as it allows Me
 ### Added
 
 - Allow link to sidebar public collection link to be hidden (#189).
+#### improve validation error messages and 'working' messages in cart 
+
+Added an error response type to publishing plugin that can propagate error messages back to the user 'toaster' messages
+
+#### #204 use comma as CSV delimiter
 
 ## [2.6.1] - 2023-03-27
 
