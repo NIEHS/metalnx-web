@@ -5,8 +5,6 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.datautils.shoppingcart.FileShoppingCart;
 import org.irods.jargon.datautils.shoppingcart.ShoppingCartService;
@@ -213,49 +211,4 @@ public class ShoppingCartApiController {
 			throw e;
 		}
 	}
-
-	/**
-	 * Return information of the available publishing plugin
-	 * 
-	 * @param request {@link HttpServletRequest}
-	 * @return {@code String} with json
-	 * @throws DataGridException {@link DataGridException}
-	 */
-	@RequestMapping(value = "/info")
-	@ResponseBody
-	public String retrievePublishingInfo(final HttpServletRequest request) throws DataGridException {
-
-		log.info("retrievePublishingInfo()");
-
-		PublishingIndexInventory publishingIndexInventory = pluggablePublishingWrapperService
-				.getPublishingIndexInventory();
-
-		PlublishingSchemaListing publishingschema = new PlublishingSchemaListing();
-		for (String key : publishingIndexInventory.getPublishingInventoryEntries().keySet()) {
-			PublishingInventoryEntry publishingInventoryEntry = publishingIndexInventory.getPublishingInventoryEntries()
-					.get(key);
-			PlublishingSchemaEntry publishingSchemaEntry = new PlublishingSchemaEntry();
-			publishingSchemaEntry.setEndpointUrl(publishingInventoryEntry.getEndpointUrl());
-			publishingSchemaEntry
-					.setSchemaDescription(publishingInventoryEntry.getPublishingEndpointDescription().getInfo());
-			publishingSchemaEntry.setSchemaId(publishingInventoryEntry.getPublishingEndpointDescription().getId());
-			publishingSchemaEntry.setSchemaName(publishingInventoryEntry.getPublishingEndpointDescription().getName());
-			publishingSchemaEntry.setResponseType(publishingInventoryEntry.getPublishingEndpointDescription()
-					.getResponseType().getResponseType().getValue());
-			publishingschema.getPublishingSchemaEntry().add(publishingSchemaEntry);
-		}
-
-		String jsonString;
-
-		try {
-			jsonString = mapper.writeValueAsString(publishingschema);
-			log.debug("jsonString:{}", jsonString);
-		} catch (JsonProcessingException e) {
-			log.error("Could not parse index inventory: {}", e.getMessage());
-			throw new DataGridException("exception in json parsing", e);
-		}
-
-		return jsonString;
-	}
-
 }
