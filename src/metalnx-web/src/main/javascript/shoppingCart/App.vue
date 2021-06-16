@@ -8,10 +8,7 @@
 <script>
   import Vue from 'vue'
   import BootstrapVue from 'bootstrap-vue'
-<<<<<<< HEAD
-=======
   import App from './App'
->>>>>>> 8a41e3df (157 wip)
 
   Vue.use(BootstrapVue)
 
