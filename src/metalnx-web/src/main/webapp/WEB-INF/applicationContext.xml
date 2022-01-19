@@ -24,7 +24,7 @@
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
 	</bean>
 
-	<!-- this resource must be in the /etc/irods-ext directory, see the CONFIGURATION.md 
+	<!-- this resource must be in the /etc/irods-ext directory, see the CONFIGURATION.md
 		doc at the top of the repo, -->
 
 	<import resource="file:/etc/irods-ext/metalnxConfig.xml" />
@@ -48,8 +48,8 @@
 	<bean id="logoutHandler"
 		class="com.emc.metalnx.services.auth.IRODSLogoutSuccessHandler" />
 
-	<!-- Instead of redirecting the user to the login page when he tries to 
-		access a page with an expired session id, we return an error (403). By doing 
+	<!-- Instead of redirecting the user to the login page when he tries to
+		access a page with an expired session id, we return an error (403). By doing
 		that, all ajax calls will be able to handle forbidden access to any page. -->
 	<bean id="ep403"
 		class="com.emc.metalnx.handler.Http403ForbiddenEntryPoint" />
@@ -93,6 +93,7 @@
 		<sec:intercept-url pattern="/shoppingCart/**"
 			access="ROLE_ADMIN,ROLE_USER,ROLE_GROUPADMIN" />
 		<sec:intercept-url pattern="/api/shoppingCart/**"
+            access="ROLE_ADMIN,ROLE_USER,ROLE_GROUPADMIN" />
 		<sec:intercept-url pattern="/gallery/**"
 			access="ROLE_ADMIN,ROLE_USER,ROLE_GROUPADMIN" />
 		<sec:intercept-url pattern="/browse/**"
@@ -157,7 +158,7 @@
 			success-handler-ref="logoutHandler" />
 
 	</sec:http>
-	<!-- <bean id="exceptionFilter" class="com.emc.metalnx.services.auth.MetalnxExceptionTranslationFilter"> 
+	<!-- <bean id="exceptionFilter" class="com.emc.metalnx.services.auth.MetalnxExceptionTranslationFilter">
 		<constructor-arg ref="ep403"/> </bean> -->
 
 	<sec:authentication-manager>
