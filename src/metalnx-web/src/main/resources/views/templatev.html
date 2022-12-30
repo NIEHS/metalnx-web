@@ -1,8 +1,19 @@
 <!DOCTYPE html>
-<!-- Copyright (c) 2018, University of North Carolina at Chapel Hill -->
-<!-- Copyright (c) 2015-2017, Dell EMC -->
-
-
+<!-- VIA PLUGIN
+  ~ Copyright (c) 2015-2017, Dell EMC
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
 
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.thymeleaf.org"
@@ -19,66 +30,67 @@
 <link rel="shortcut icon" href="../static/images/favicon-16.png"
 	th:href="@{/images/favicon-16.png}" type="image/png" />
 
-<title>iRODS Metalnx</title>
+<title th:if="${userDetails.isAdmin()}">iRODS Admin UI</title>
+<title th:unless="${userDetails.isAdmin()}">iRODS User Interface</title>
 
 <!-- jQuery Version 1.11.0 -->
 <script src="../static/js/jquery-1.11.0.js"
 	th:src="@{/js/jquery.min.js}"></script>
-	
-<!-- Popper required by bootstrap4 -->
-<script src="../static/js/popper.min.js"
-	th:src="@{/js/popper.min.js}"></script>
 
 <!-- Bootstrap Core CSS -->
-<link href="../static/css/bootstrap4.min.css" rel="stylesheet"
-	th:href="@{/css/bootstrap4.min.css}" />
-	
+<link href="../static/css/bootstrap.min.css" rel="stylesheet"
+	th:href="@{/css/bootstrap.min.css}" />
 
 <!-- Custom Fonts -->
 <link href="../static/css/font-awesome.min.css" rel="stylesheet"
 	type="text/css" th:href="@{/css/font-awesome.min.css}" />
-<link href="../static/css/fontawesome-5.0.13.min.css" rel="stylesheet"
-	type="text/css" th:href="@{/css/fontawesome-5.0.13.min.css}" />
-
-<link href="../static/css/toastr.css" rel="stylesheet"
-	th:href="@{/css/toastr.css}" />
 
 <link href="../static/css/styles.css" rel="stylesheet"
 	th:href="@{/css/styles.css}" />
-
-<link href="../static/css/styles.css" rel="stylesheet"
-	th:href="@{/css/global.css}" />
 
 <!-- Tags input -->
 <link href="../static/css/bootstrap-tagsinput.css" rel="stylesheet"
 	th:href="@{/css/bootstrap-tagsinput.css}" />
 
-<!-- Tagsinput -->
-<script src="../static/js/bootstrap-tagsinput.min.js"
-	th:src="@{/js/bootstrap-tagsinput.min.js}"></script>
+<!-- global css -->
+<link href="../static/css/global.css" rel="stylesheet"
+	th:href="@{/css/global.css}" />
+	<!-- toastr css -->
+	<link href="../static/css/toastr.css" rel="stylesheet"
+		th:href="@{/css/toastr.css}" />
 
-<!-- Typeahead jQuery Plugin -->
-<script src="../static/js/typeahead.js" th:src="@{/js/typeahead.js}"></script>
+<!-- junction header asset block -->
+<script type="text/javascript">var currentSection = "divisions";</script>
+<!-- ~~~Start of headerassets (DO NOT DELETE)~~~-->
+<link
+	href="https://www.niehs.nih.gov/resources/stylesheets/semantic/semantic.css"
+	rel="stylesheet" type="text/css" />
+<link
+	href="https://junction.niehs.nih.gov/resources/stylesheets/styles-standard.min.css?version=08302017"
+	rel="stylesheet" type="text/css" />
+<link
+	href="https://junction.niehs.nih.gov/resources/stylesheets/print.min.css?version=08302017"
+	rel="stylesheet" type="text/css" media="print" />
 
-<!-- Ajax Encapsulation -->
-<script src="../static/js/ajax.js" th:src="@{/js/ajax.js}"></script>
-
-<!-- Clipboard -->
-<script src="../static/js/clipboard.min.js"
-	th:src="@{/js/clipboard.min.js}"></script>
-
-<!-- Bootstrap JS -->
-<script src="../static/js/bootstrap4.min.js"
-	th:src="@{/js/bootstrap4.min.js}"></script>
-
-<!-- Toastr -->
-<script src="../static/js/toastr.min.js" th:src="@{/js/toastr.min.js}"></script>
-
-<!-- Nano scroll -->
-<script src="../static/js/jquery.nanoscroller.min.js"
-	th:src="@{/js/jquery.nanoscroller.min.js}"></script>
-<link href="../static/css/nanoscroller.css" rel="stylesheet"
-	th:href="@{/css/nanoscroller.css}" />
+<!--	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script> -->
+<!-- ~~~End of headerassets (DO NOT DELETE)~~~-->
+<!-- ~~~Start of headerassets (DO NOT DELETE)~~~-->
+<script type="text/javascript"
+	src="https://junction.niehs.nih.gov/resources/javascript/semanticTopNav.js?version=08302017"></script>
+<!-- ~~~End of headerassets (DO NOT DELETE)~~~-->
+<!-- ~~~Start of headerassets (DO NOT DELETE)~~~-->
+<script type="text/javascript"
+	src="https://junction.niehs.nih.gov/resources/javascript/hoverIntent.js"></script>
+<script type="text/javascript"
+	src="https://www.niehs.nih.gov/resources/javascripts/libraries/ilightbox/ilightbox.js"></script>
+<script type="text/javascript"
+	src="https://www.niehs.nih.gov/resources/javascripts/libraries/semantic_menu/transition.min.js"></script>
+<script type="text/javascript"
+	src="https://www.niehs.nih.gov/resources/javascripts/libraries/semantic_menu/dropdown.min.js"></script>
+<!-- ~~~End of headerassets (DO NOT DELETE)~~~-->
+<script type="text/javascript"
+	src="//junction.niehs.nih.gov/resources/javascript/apps.onload.js"></script>
+<!-- end junction header asset block -->
 
 <!-- Datatables component -->
 <link rel="stylesheet" href="../static/css/dataTables.bootstrap.min.css"
@@ -91,8 +103,31 @@
 <!-- Our customization on datatables jquery plugin -->
 <script src="../static/js/dataTable.customize.js"
 	th:src="@{/js/dataTable.customize.js}"></script>
-</head>
 
+<!-- Nano scroll -->
+<script src="../static/js/jquery.nanoscroller.min.js"
+	th:src="@{/js/jquery.nanoscroller.min.js}"></script>
+<link href="../static/css/nanoscroller.css" rel="stylesheet"
+	th:href="@{/css/nanoscroller.css}" />
+
+
+<!-- Tagsinput -->
+<script src="../static/js/bootstrap-tagsinput.min.js"
+	th:src="@{/js/bootstrap-tagsinput.min.js}"></script>
+
+<!-- Typeahead jQuery Plugin -->
+<script src="../static/js/typeahead.js" th:src="@{/js/typeahead.js}"></script>
+
+<!-- Ajax Encapsulation -->
+<script src="../static/js/ajax.js" th:src="@{/js/ajax.js}"></script>
+
+<!-- Clipboard -->
+<script src="../static/js/clipboard.min.js" th:src="@{/js/clipboard.min.js}"></script>
+
+<!-- toastr notification -->
+<script src="../static/js/toastr.min.js" th:src="@{/js/toastr.min.js}"></script>
+<script src="../static/js/toastr.options.js" th:src="@{/js/toastr.options.js}"></script>
+</head>
 <body>
 
 	<div id="wrapper">
@@ -520,7 +555,7 @@
 			<div id="page-wrapper">
 				<!-- SKIPNAV ANCHOR -->
 				<a name="skipnav-anchor"></a>
-				
+
 				<div class="row">
 					<div class="col-sm-12" layout:fragment="content">
 						<h1 class="page-header">Title here</h1>
@@ -530,18 +565,97 @@
 				<!-- /.row -->
 			</div>
 		</div>
-
+		<!-- /#page-wrapper -->
 		<!-- Footer -->
-		<footer class="row"> &copy; 2018-2019 University of North
-			Carolina at Chapel Hill; 2015-2017 DELL EMC. All rights reserved. </footer>
+		<footer class="row">
+
+			<!-- junction footer block -->
+			<div id="footer">
+				<div class="footer_top-links">
+					<p class="ftr-emergency">
+						<a href="https://junction.niehs.nih.gov/safety/badges/emergency/"><strong>For
+								Emergencies:</strong></a> call 1-2800
+					</p>
+					<p class="site-map">
+						<a
+							href="https://junction.niehs.nih.gov/computer/webtools/site_map/sitemap.htm">Site
+							Map</a>
+					</p>
+					<p class="a-z">
+						<a
+							href="https://junction.niehs.nih.gov/computer/webtools/a-z/a-z-abstracts.cfm">Junction:
+							A to Z</a>
+					</p>
+				</div>
+				<div class="footer_buttons">
+					<a href="#" id="junction-feedback" data-type="ajax"
+						title="Junction Feedback" class="fixedAjaxDOMWindow">Junction
+						Feedback</a> <a href="#" id="junction-request"
+						title="Update This Page" target="_blank">Update This Page</a>
+				</div>
+				<p class="footer_bottom-links">
+					Other Websites: <a href="https://www.niehs.nih.gov/"
+						target="_blank">NIEHS</a><span class="ftr-divider">|</span> <a
+						href="https://ntp.niehs.nih.gov/" target="_blank">NTP</a><span
+						class="ftr-divider"> |</span> <a href="https://ehp.niehs.nih.gov/"
+						target="_blank">EHP</a><span class="ftr-divider"> |</span> <a
+						href="https://kids.niehs.nih.gov/" target="_blank">Kids</a><span
+						class="ftr-divider"> |</span> <a
+						href="https://partners.niehs.nih.gov/" target="_blank">NIEHS
+						Extranet</a><span class="ftr-divider"> |</span> <a
+						href="https://www.nih.gov/" target="_blank">NIH</a><span
+						class="ftr-divider"> |</span> <a href="https://employees.nih.gov/"
+						target="_blank">NIH Intranet</a><span class="ftr-divider">
+						|</span> <a href="https://www.hhs.gov/" target="_blank">HHS</a><span
+						class="ftr-divider"> |</span> <a href="https://www.opm.gov/"
+						target="_blank">OPM</a><span class="ftr-divider"> |</span> <a
+						href="https://www.niehs.nih.gov/about/od/ocpl/policies/index.cfm#a6581"
+						target="_blank">Accessibility</a>
+				</p>
+			</div>
+			<!--  end junction footer block -->
+		</footer>
 	</div>
 
+
 	<!-- About modal -->
-	<th:block th:include="misc/about">
-	</th:block>
+	<th:block th:include="misc/about"> </th:block>
 
+	<!-- About modal
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">
+						About EMC MetaLnx UI <span th:text="${emcmetalnxVersion.VERSION}"></span>-<span
+							th:text="${emcmetalnxVersion.BUILD_NUMBER}"></span>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						<i> This software contains the intellectual property of EMC
+							Corporation or is licensed to DELL EMC Corporation from third
+							parties. Use of this software and the intellectual property
+							contained therein is expressly limited to the terms and
+							conditions of the License Agreement under which it is provided by
+							or on behalf of EMC. </i>
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">
+						Ok</button>
+				</div>
+			</div>
+		</div>
+	</div> -->
 
-
+	<!-- Bootstrap Core JavaScript -->
+	<script src="../static/js/bootstrap.min.js"
+		th:src="@{/js/bootstrap.min.js}"></script>
 
 	<!-- Metis Menu Plugin JavaScript -->
 	<script src="../static/js/metisMenu.min.js"
@@ -582,5 +696,8 @@
 		});
 	/*]]>*/
 	</script>
+
+
 </body>
+
 </html>
