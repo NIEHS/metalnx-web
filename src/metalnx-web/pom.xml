@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>com.emc.metalnx</groupId>
 		<artifactId>emc-metalnx</artifactId>
-		<version>2.6.1-SNAPSHOT</version>
+		<version>2.6.1-RELEASE</version>
 	</parent>
 
 	<artifactId>metalnx-web</artifactId>
@@ -529,16 +529,11 @@
 									irods.admin.user=${jargon.test.irods.admin}
 									irods.admin.password=${jargon.test.irods.admin.password}
 
-
 									irods.auth.scheme=${metalnx.auth.scheme}
 									default.storage.resource=${jargon.test.irods.resource}
 									ssl.negotiation.policy=${metalnx.ssl.policy}
 
-
-
 									utilize.packing.streams=${metalnx.packing.streams}
-
-
 									compute.checksum=${metalnx.compute.checksum}
 
 									db.driverClassName=${metalnx.jdbc.driver}
@@ -546,43 +541,28 @@
 									db.username=${metalnx.jdbc.user}
 									db.password=${metalnx.jdbc.password}
 									hibernate.dialect=${metalnx.jdbc.dialect}
-
-
 									hibernate.show_sql=true
 									hibernate.format_sql=false
 
-
 									hibernate.hbm2ddl.auto=update
-
-
 									connection.pool_size=5
-
-
 									jobs.irods.username=${jargon.test.irods.admin}
 									jobs.irods.password=${jargon.test.irods.admin.password}
 									jobs.irods.auth.scheme=${metalnx.auth.scheme}
 									runSyncJobs=true
 
-
 									rmd.connection.timeout=500
 									rmd.connection.port=8000
 
 									reverse.dns.lookup=false
-
-
 									populate.msi.enabled=false
 									illumina.msi.enabled=true
 
 									msi.api.version=1.X.X
-
 									msi.metalnx.list=libmsiget_illumina_meta.so,libmsiobjget_microservices.so,libmsiobjget_version.so,libmsiobjjpeg_extract.so,libmsiobjput_mdbam.so,libmsiobjput_mdbam.so,libmsiobjput_mdmanifest.so,libmsiobjput_mdvcf.so,libmsiobjput_populate.so
-
 									msi.irods.list=libmsisync_to_archive.so,libmsi_update_unixfilesystem_resource_free_space.so,libmsiobjput_http.so,libmsiobjput_irods.so,libmsiobjget_irods.so,libmsiobjget_http.so,libmsiobjput_slink.so,libmsiobjget_slink.so
-
 									msi.irods.42.list=libmsisync_to_archive.so,libmsi_update_unixfilesystem_resource_free_space.so
-
 									msi.other.list=
-
 									resource.location.images=/images/,classpath:static/images/
 									resource.location.fonts=/fonts/,classpath:static/fonts/
 									resource.location.css=/css/,classpath:static/css/
@@ -590,34 +570,25 @@
 									resource.location.images=/images/,classpath:static/plugins/
 									resource.location.i18=classpath:i18n/messages
 									resource.location.i18-users=classpath:i18n-users/messages
-
 									metalnx.enable.tickets=${metalnx.enable.tickets}
 									metalnx.enable.upload.rules=${metalnx.enable.upload.rules}
 									metalnx.download.limit=${metalnx.download.limit}
-
 									metalnx.authtype.mappings=PAM:PAM|STANDARD:Standard
 									metalnx.enable.dashboard=false
 									access.proxy=true
 									irodsext.dataprofiler.retrieve.tickets=false
-
 									irodsext.dataprofiler.retrieve.starred=true
-
 									irodsext.dataprofiler.retrieve.shared=false
-
 									irodsext.dataprofiler.retrieve.tags.and.comments=false
-
 									irodsext.dataprofiler.retrieve.metadata.templates=false
-
 									irodsext.datatyper.persist.data.types=false
-
 									irodsext.datatyper.detailed.determination=false
-
-									jwt.issuer=${jargon.search.jwtIssuer}
-									jwt.secret=${jargon.search.jwtSecret}
-									jwt.algo=${jargon.search.jwtAlgo}
-
-									pluggablesearch.enabled=${jargon.search.enabled}
+									jwt.issuer=${metalnx.jwt.issuer}
+									jwt.secret=${metalnx.jwt.algo}
+									jwt.algo=${metalnx.jwt.algo}
+									pluggablesearch.enabled=${pluggablesearch.enabled}
 									classicsearch.enabled=true
+									pluggableshoppingcart.enabled=${pluggableshoppingcart.enabled}
 									pluggablesearch.endpointAccessSubject=${jargon.search.endpointAccessSubject}
 									pluggablesearch.info.timeout=0
 									pluggablesearch.search.timeout=0
