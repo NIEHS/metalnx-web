@@ -6,22 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- [#288] Support key event on pluggable search
+- [#317] Build no longer pollutes personal .m2 directory.
+- [#191] Added support for hiding metadata based on a set of prefixes.
 
 ### Changed
 
-- [#36] cleanup, disable sorting on Action column
-- [#210] show failure message when collection cannot be deleted
-- [#217] add clean to mvn package
-- [#220] fix download limit warning to match configured value
-- improve validation error messages and 'working' messages in cart
-- Added an error response type to publishing plugin that can propagate error messages back to the user 'toaster' messages
-- [#204] use comma as CSV delimiter
-- [#223] collection browsing is now sortable
-- [#230 capitalize iRODS correctly
-- [#233] modify layout of gallery button
-- [#282] Make collections with space in name clickable
-- [#297] Gave permission to rodsadmin and groupadmin to modify metadata template
-- [#295] Render save buttons of preview tab based on permission type
-- [#290] update page title for consistency
-- Converted to GitHub supported Maven repository semantics
+- [#247,#337,#343] Bumped version of Jargon for bug fixes.
+- [#294] Create IRODSFileSystem and IRODSAccessObjectFactory only once.
+- [#332] Set createParentCollections to true when calling createCollection
+- [#191] Made it so that rodsadmins can always see metadata.
+- [#321] Bumped Jargon version.
+- [#255] User is now asked to confirm changes to permissions.
