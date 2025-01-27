@@ -92,39 +92,32 @@ In addition, an additional profile for Metalnx is required, like this...
 
 <profile>
 			<id>metalnx-local</id>
-			 <properties>
-          <metalnx.auth.scheme>STANDARD</metalnx.auth.scheme>
-          <metalnx.ssl.policy>CS_NEG_REFUSE</metalnx.ssl.policy>
-          <metalnx.packing.streams>true</metalnx.packing.streams>
-          <metalnx.compute.checksum>true</metalnx.compute.checksum>
-          <metalnx.jdbc.driver>org.postgresql.Driver</metalnx.jdbc.driver>
-          <metalnx.jdbc.url>jdbc:postgresql://localhost:5432/metalnx</metalnx.jdbc.url>
-          <metalnx.jdbc.user>metalnx</metalnx.jdbc.user>
-          <metalnx.jdbc.password>metalnx</metalnx.jdbc.password>
-          <metalnx.jdbc.dialect>org.hibernate.dialect.PostgreSQLDialect</metalnx.jdbc.dialect>
-          <selenium.test.hostname>localhost</selenium.test.hostname>
-          <selenium.test.chrome.driver>webdriver.chrome.driver</selenium.test.chrome.driver>
-          <selenium.test.chrome.driver.loaction>C:/Users/pateldes/driver/chromedriver.exe</selenium.test.chrome.driver.loaction>
-          <metalnx.enable.tickets>true</metalnx.enable.tickets>
-          <metalnx.enable.upload.rules>false</metalnx.enable.upload.rules>
-          <metalnx.download.limit>100</metalnx.download.limit>
-          <metalnx.mail.enabled>false</metalnx.mail.enabled>
-          <metalnx.mail.host></metalnx.mail.host>
-          <metalnx.mail.user></metalnx.mail.user>
-          <metalnx.mail.password></metalnx.mail.password>
-          <metalnx.mail.port>25</metalnx.mail.port>
-          <metalnx.starttls.enable>true</metalnx.starttls.enable>
-          <metalnx.smtp.auth>true</metalnx.smtp.auth>
-          <metalnx.transport.protocol>smtp</metalnx.transport.protocol>
-          <metalnx.mail.debug>true</metalnx.mail.debug>
-          <metalnx.mail.from></metalnx.mail.from>
-          <metalnx.mail.to></metalnx.mail.to>
-          <metalnx.jwt.issuer>gov.nih.niehs</metalnx.jwt.issuer>
-          <metalnx.jwt.algo>HS384</metalnx.jwt.algo>
-          <metalnx.jwt.algo>thisisasecretthatisverysecretyouwillneverguessthiskey</metalnx.jwt.algo>
-          <pluggableshoppingcart.enabled>true</pluggableshoppingcart.enabled>
-          <pluggablesearch.enabled>false</pluggablesearch.enabled>
-            </properties>
+			<properties>
+				<metalnx.auth.scheme>STANDARD</metalnx.auth.scheme>
+				<metalnx.ssl.policy>CS_NEG_REFUSE</metalnx.ssl.policy>
+				<metalnx.packing.streams>true</metalnx.packing.streams>
+				<metalnx.compute.checksum>true</metalnx.compute.checksum>
+				<selenium.test.hostname>localhost</selenium.test.hostname>
+				<selenium.test.chrome.driver>webdriver.chrome.driver</selenium.test.chrome.driver>
+				<selenium.test.chrome.driver.loaction>C:/Users/pateldes/driver/chromedriver.exe</selenium.test.chrome.driver.loaction>
+	        		<metalnx.enable.tickets>true</metalnx.enable.tickets>
+	       		 <metalnx.enable.upload.rules>false</metalnx.enable.upload.rules>
+	        		<metalnx.download.limit>100</metalnx.download.limit>
+				<metalnx.mail.enabled>false</metalnx.mail.enabled>
+				<metalnx.mail.host></metalnx.mail.host>
+				<metalnx.mail.user></metalnx.mail.user>
+				<metalnx.mail.password></metalnx.mail.password>
+				<metalnx.mail.port>25</metalnx.mail.port>
+				<metalnx.starttls.enable>true</metalnx.starttls.enable>
+				<metalnx.smtp.auth>true</metalnx.smtp.auth>
+				<metalnx.transport.protocol>smtp</metalnx.transport.protocol>
+				<metalnx.mail.debug>true</metalnx.mail.debug>
+				<metalnx.mail.from></metalnx.mail.from>
+        			<metalnx.mail.to></metalnx.mail.to>
+        			<metalnx.jwt.issuer>gov.nih.niehs</metalnx.jwt.issuer>
+				<metalnx.jwt.algo>HS256</metalnx.jwt.algo>
+				<metalnx.jwt.algo>thisisasecret</metalnx.jwt.algo>
+			</properties>
 		</profile>
 
 ```
@@ -162,14 +155,6 @@ and database are initially installed and configured, and the properties are all 
 correctly in settings.xml (be sure to activate the appropriate profiles in maven!) You should
 get a clean build running the tests, and once maven has run to get the properties, running
 unit tests in eclipse, etc should also work fine.
-
-### Database Setup
-
-Note that Metalnx needs its own database, and it needs to be initialized. The settings for this initialized
-metalnx database are then reflected in the above metalnx profile.
-
-This involves some plsql to create the database, and the running a tool to initialize or migrate the database.
-This is covered in the README.md in the src/metalnx-tools subproject.
 
 ### Docker support for a build container
 
