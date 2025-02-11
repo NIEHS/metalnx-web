@@ -5,7 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.emc.metalnx</groupId>
 	<artifactId>emc-metalnx</artifactId>
+<<<<<<< HEAD
 	<version>2.6.1-RELEASE</version>
+=======
+	<version>3.0.0-RELEASE</version>
+
+>>>>>>> ce5e52b2 ([#215] Bump version to 3.0.0-RELEASE.)
 	<packaging>pom</packaging>
 	<properties>
 
