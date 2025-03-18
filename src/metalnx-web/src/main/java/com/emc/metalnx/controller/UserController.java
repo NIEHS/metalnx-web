@@ -52,7 +52,6 @@ import com.emc.metalnx.modelattribute.user.UserForm;
 import com.emc.metalnx.services.interfaces.GroupService;
 import com.emc.metalnx.services.interfaces.HeaderService;
 import com.emc.metalnx.services.interfaces.IRODSServices;
-import com.emc.metalnx.services.interfaces.UserBookmarkService;
 import com.emc.metalnx.services.interfaces.UserService;
 import com.emc.metalnx.services.interfaces.ZoneService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -79,12 +78,6 @@ public class UserController {
 
 	@Autowired
 	ZoneService zoneService;
-
-	@Autowired
-	UserBookmarkService userBookmarkService;
-
-	@Autowired
-	UserBookmarkController userBookmarkController;
 
 	@Autowired
 	LoggedUserUtils loggedUserUtils;
@@ -129,7 +122,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/find/{query}/")
 	public String listUsersByPageAndQuery(Model model, @PathVariable String query) {
-		List<DataGridUser> users = userService.findByQueryString(query);
+		List<DataGridUser> users = userService.findByUsername(query);
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String usernameLogged = (String) auth.getPrincipal();
@@ -150,15 +143,13 @@ public class UserController {
 	@ResponseBody
 	public String findUserByQueryy(Model model, @PathVariable String query) {
 		ObjectMapper mapper = new ObjectMapper();
-		List<DataGridUser> users = userService.findByQueryString(query);
+		List<DataGridUser> users = userService.findByUsername(query);
 
 		List<Map<String, Object>> userList = new ArrayList<Map<String, Object>>();
 
 		for (DataGridUser user : users) {
 			Map<String, Object> userMap = new LinkedHashMap<String, Object>();
 			userMap.put("username", user.getUsername());
-			userMap.put("first_name", user.getFirstName());
-			userMap.put("last_name", user.getLastName());
 			userList.add(userMap);
 		}
 
@@ -282,29 +273,10 @@ public class UserController {
 		}
 
 		DataGridUser newUser = new DataGridUser();
-		newUser.setAdditionalInfo(user.getAdditionalInfo());
+		newUser.setZone(user.getZone());
 		newUser.setUsername(user.getUsername());
-		newUser.setFirstName(user.getFirstName());
-		newUser.setLastName(user.getLastName());
-		newUser.setEmail(user.getEmail());
 		newUser.setUserType(user.getUserType());
-		newUser.setOrganizationalRole(user.getOrganizationalRole() != null ? user.getOrganizationalRole() : "");
-		newUser.setCompany(user.getCompany() != null ? user.getCompany() : "");
-		newUser.setDepartment(user.getDepartment() != null ? user.getDepartment() : "");
 		logger.info("adding user:{}", newUser);
-
-		String[] groupList = groupsToBeAdded.toArray(new String[groupsToBeAdded.size()]);
-		List<UserGroup> groups = new ArrayList<UserGroup>();
-		if (groupList != null && groupList.length != 0) {
-			for (String groupId : groupList) {
-				UserGroup userGroup = groupService.findById(groupId);
-				if (groupId == null) {
-					logger.warn("unable to find group for id:{}", groupId);
-				} else {
-					groups.add(userGroup);
-				}
-			}
-		}
 
 		try {
 			logger.info("creating the user...");
@@ -315,10 +287,6 @@ public class UserController {
 				throw new DataGridException("User creation failed");
 			}
 
-			// Updating the group list for the recently-created user
-
-			userService.updateGroupList(newUser, groups);
-
 			// adding read, write and ownership permissions to a set of collections
 			userService.updateReadPermissions(newUser, addReadPermissionsOnDirs, removeReadPermissionsOnDirs);
 			userService.updateWritePermissions(newUser, addWritePermissionsOnDirs, removeWritePermissionsOnDirs);
@@ -326,10 +294,8 @@ public class UserController {
 
 			cleanPermissionsSets();
 
-			DataGridUser userForGroups = userService.findByUsernameAndAdditionalInfo(newUser.getUsername(),
-					newUser.getAdditionalInfo());
-			// User bookmarks
-			updateBookmarksList(newUser.getUsername(), newUser.getAdditionalInfo());
+			DataGridUser userForGroups = userService.findByUsernameAndZone(newUser.getUsername(),
+					newUser.getZone());
 
 			userService.modifyUser(userForGroups);
 			redirectAttributes.addFlashAttribute("userAddedSuccessfully", user.getUsername());
@@ -371,16 +337,16 @@ public class UserController {
 	 * Controller that shows the modification of user view.
 	 *
 	 * @param username
-	 * @param additionalInfo
+	 * @param zone
 	 * @param model
 	 * @return the template name to render the modify user form
 	 * @throws DataGridConnectionRefusedException
 	 */
-	@RequestMapping(value = "modify/{username}/{additionalInfo}/", method = RequestMethod.GET)
-	public String showModifyUserForm(@PathVariable String username, @PathVariable String additionalInfo, Model model)
+	@RequestMapping(value = "modify/{username}/{zone}/", method = RequestMethod.GET)
+	public String showModifyUserForm(@PathVariable String username, @PathVariable String zone, Model model)
 			throws DataGridException {
 
-		DataGridUser user = userService.findByUsernameAndAdditionalInfo(username, additionalInfo);
+		DataGridUser user = userService.findByUsernameAndZone(username, zone);
 		List<UserGroup> groups = groupService.findAll();
 		List<DataGridZone> zones = zoneService.findAll();
 
@@ -389,31 +355,9 @@ public class UserController {
 			// iRODS data
 			userForm.setDataGridId(user.getDataGridId());
 			userForm.setUsername(user.getUsername());
-			userForm.setAdditionalInfo(user.getAdditionalInfo());
-			userForm.setUserProfile(user.getUserProfile());
-			userForm.setOrganizationalRole(user.getOrganizationalRole());
+			userForm.setZone(user.getZone());
 			userForm.setUserType(user.getUserType());
 
-			// our data
-			if (user.getEmail() != null) {
-				userForm.setEmail(user.getEmail());
-			}
-
-			if (user.getFirstName() != null) {
-				userForm.setFirstName(user.getFirstName());
-			}
-
-			if (user.getLastName() != null) {
-				userForm.setLastName(user.getLastName());
-			}
-
-			if (user.getCompany() != null) {
-				userForm.setCompany(user.getCompany());
-			}
-
-			if (user.getDepartment() != null) {
-				userForm.setDepartment(user.getDepartment());
-			}
 
 			// Getting the list of groups the user belongs to
 			String[] groupList = userService.getGroupIdsForUser(user);
@@ -430,7 +374,7 @@ public class UserController {
 
 		model.addAttribute("groups", groups);
 		model.addAttribute("zones", zones);
-		model.addAttribute("userZone", additionalInfo);
+		model.addAttribute("userZone", zone);
 		model.addAttribute("userTypes", userService.listUserTypes());
 
 		return "users/userForm";
@@ -467,8 +411,8 @@ public class UserController {
 
 		logger.info("groupsToBeAdded:{}", groups);
 
-		DataGridUser user = userService.findByUsernameAndAdditionalInfo(userForm.getUsername(),
-				userForm.getAdditionalInfo());
+		DataGridUser user = userService.findByUsernameAndZone(userForm.getUsername(),
+				userForm.getZone());
 
 		if (user == null) {
 			logger.warn("user:{} not found:", userForm.getUsername());
@@ -476,20 +420,10 @@ public class UserController {
 		}
 
 		if (user != null) {
-			user.setAdditionalInfo(userForm.getAdditionalInfo());
+			user.setZone(userForm.getZone());
 			user.setUsername(userForm.getUsername());
 			user.setPassword(userForm.getPassword());
-			user.setFirstName(userForm.getFirstName());
-			user.setLastName(userForm.getLastName());
-			user.setEmail(userForm.getEmail());
-			user.setOrganizationalRole(
-					userForm.getOrganizationalRole() != null ? userForm.getOrganizationalRole() : "");
 			user.setUserType(userForm.getUserType());
-			user.setCompany(userForm.getCompany() != null ? userForm.getCompany() : "");
-			user.setDepartment(userForm.getDepartment() != null ? userForm.getDepartment() : "");
-
-			// User bookmarks
-			updateBookmarksList(user.getUsername(), user.getAdditionalInfo());
 
 			userService.modifyUser(user);
 			userService.updateGroupList(user, groups);
@@ -701,20 +635,12 @@ public class UserController {
 		List<DataGridUser> users = userService.findAll();
 		List<String> rows = new ArrayList<String>();
 		rows.add(
-				"Username;Zone;FirstName;LastName;Email;UserType;UserProfile;Title;Company;Department;OrganizationalRole\n");
+				"Username;Zone;UserType\n");
 
 		for (DataGridUser user : users) {
 			rows.add(user.getUsername() + ";");
-			rows.add(user.getAdditionalInfo() + ";");
-			rows.add((user.getFirstName() == null ? "" : user.getFirstName()) + ";");
-			rows.add((user.getLastName() == null ? "" : user.getLastName()) + ";");
-			rows.add((user.getEmail() == null ? "" : user.getEmail()) + ";");
+			rows.add(user.getZone() + ";");
 			rows.add(user.getUserType() + ";");
-			rows.add((user.getUserProfile() == null ? "" : user.getUserProfile()) + ";");
-			rows.add((user.getTitle() == null ? "" : user.getTitle()) + ";");
-			rows.add((user.getCompany() == null ? "" : user.getCompany()) + ";");
-			rows.add((user.getDepartment() == null ? "" : user.getDepartment()) + ";");
-			rows.add(user.getOrganizationalRole() == null ? "" : user.getOrganizationalRole());
 			rows.add("\n");
 		}
 
@@ -766,35 +692,5 @@ public class UserController {
 		}
 
 		return "false";
-	}
-
-	/*
-	 * *****************************************************************************
-	 * *************** ******************************** PRIVATE
-	 * ***************************************
-	 * *****************************************************************************
-	 * ***************
-	 */
-
-	/**
-	 * Persists the changes on the bookmarks lists for the given group on the
-	 * database
-	 *
-	 * @param groupName
-	 */
-	private void updateBookmarksList(String username, String additionalInfo) {
-		if (username == null || username.isEmpty() || additionalInfo == null || additionalInfo.isEmpty()) {
-			return;
-		}
-
-		DataGridUser user = userService.findByUsernameAndAdditionalInfo(username, additionalInfo);
-
-		if (user != null) {
-			Set<String> bookmarksToAdd = userBookmarkController.getAddBookmark();
-			Set<String> bookmarksToRemove = userBookmarkController.getRemoveBookmark();
-			userBookmarkService.updateBookmarks(user, bookmarksToAdd, bookmarksToRemove);
-		}
-
-		userBookmarkController.clearBookmarksLists();
 	}
 }

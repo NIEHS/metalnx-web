@@ -1,34 +1,56 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project **only** adheres to the following _(as defined at [Semantic Versioning](https://semver.org/spec/v2.0.0.html))_:
 
-### Added
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+> 
+> - MAJOR version when you make incompatible API changes
+> - MINOR version when you add functionality in a backward compatible manner
+> - PATCH version when you make backward compatible bug fixes
 
-#### #288 Support key event on pluggable search
+## [3.0.0] - 2025-02-11
+
+This major release removes the need for the PostgreSQL database, improves compatibility with iRODS 4.3, and updates several dependencies.
+
+The removal of the PostgreSQL database is particularly important as it allows Metalnx to better reflect the state of the iRODS zone.
 
 ### Changed
 
-#### #36 cleanup, disable sorting on Action column
+- Update dependencies - spring, node, dom4j, etc (#307).
+- Expose 10-level iRODS permission model for iRODS 4.3 and later (#342).
+- Update Tomcat Docker image to v9.0.98 (#359).
+- Server no longer requires default resource to be configured (#373).
+- Update log4j from v1 to v2 (#374).
 
-#### #210 show failure message when collection cannot be deleted
+### Removed
 
-#### #217 add clean to mvn package
+- Remove dependency on PostgreSQL database (#214, #327).
+- Remove preferences form and related code (#370).
 
-#### #220 fix download limit warning to match configured value
+### Fixed
 
-#### improve validation error messages and 'working' messages in cart 
+- Fix CSV download of metadata query results (#355).
+- Do not allow updates to groups while adding new user (#369).
 
-Added an error response type to publishing plugin that can propagate error messages back to the user 'toaster' messages
+### Added
 
-#### #204 use comma as CSV delimiter
-#### #223 collection browsing is now sortable
+- Allow link to sidebar public collection link to be hidden (#189).
 
-#### #230 capitalize iRODS correctly
+## [2.6.1] - 2023-03-27
 
-#### #233 modify layout of gallery button
-#### #282 Make collections with space in name clickable
-#### #297 Gave permission to rodsadmin and groupadmin to modify metadata template
-#### #295 Render save buttons of preview tab based on permission type
-#### #290 update page title for consistency
+### Changed
+
+- [#247,#337,#343] Bumped version of Jargon for bug fixes.
+- [#294] Create IRODSFileSystem and IRODSAccessObjectFactory only once.
+- [#332] Set createParentCollections to true when calling createCollection
+- [#191] Made it so that rodsadmins can always see metadata.
+- [#321] Bumped Jargon version.
+- [#255] User is now asked to confirm changes to permissions.
+
+### Added
+
+- [#317] Build no longer pollutes personal .m2 directory.
+- [#191] Added support for hiding metadata based on a set of prefixes.
