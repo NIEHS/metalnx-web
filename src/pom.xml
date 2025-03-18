@@ -5,11 +5,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.emc.metalnx</groupId>
 	<artifactId>emc-metalnx</artifactId>
-<<<<<<< HEAD
-=======
-	<version>3.0.0-RELEASE</version>
->>>>>>> 4cddc71b (niehs fix merge errors)
-
 	<version>3.0.0-RELEASE</version>
 	<packaging>pom</packaging>
 	<properties>
