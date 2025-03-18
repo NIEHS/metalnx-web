@@ -18,7 +18,6 @@ Scripts/
 /.metadata/
 **/packaging/src
 **/*.bak
-flyway.conf
 test*.properties
 node_modules
 target
@@ -27,3 +26,4 @@ node
 node_modules
 dist
 package-lock.json 
+.factorypath

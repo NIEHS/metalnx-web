@@ -27,15 +27,14 @@ import com.emc.metalnx.core.domain.entity.DataGridCollectionAndDataObject;
 import com.emc.metalnx.core.domain.entity.DataGridFilePermission;
 import com.emc.metalnx.core.domain.entity.DataGridGroupPermission;
 import com.emc.metalnx.core.domain.entity.DataGridUser;
-import com.emc.metalnx.core.domain.entity.DataGridUserBookmark;
 import com.emc.metalnx.core.domain.entity.DataGridUserPermission;
 import com.emc.metalnx.core.domain.entity.enums.DataGridPermType;
 import com.emc.metalnx.core.domain.exceptions.DataGridConnectionRefusedException;
 import com.emc.metalnx.core.domain.exceptions.DataGridException;
 import com.emc.metalnx.services.interfaces.CollectionService;
 import com.emc.metalnx.services.interfaces.GroupService;
+import com.emc.metalnx.services.interfaces.IRODSServices;
 import com.emc.metalnx.services.interfaces.PermissionsService;
-import com.emc.metalnx.services.interfaces.UserBookmarkService;
 import com.emc.metalnx.services.interfaces.UserService;
 
 @Controller
@@ -50,9 +49,6 @@ public class PermissionsController {
 	private GroupService gs;
 
 	@Autowired
-	private UserBookmarkService uBMS;
-
-	@Autowired
 	private PermissionsService ps;
 
 	@Autowired
@@ -60,15 +56,26 @@ public class PermissionsController {
 
 	@Autowired
 	private CollectionService cs;
+	
+	@Autowired
+	private IRODSServices irodsServices;
 
 	private DataGridUser loggedUser;
 
 	private HashMap<String, String> usersToAdd;
 	private HashMap<String, String> groupsToAdd;
 
-	private static final String[] PERMISSIONS = { "NONE", "READ", "WRITE", "OWN" };
-	private static final String[] PERMISSIONS_WITHOUT_NONE = { "READ", "WRITE", "OWN" };
+	private static final String[] PERMISSIONS = { 
+			"OWN", "DELETE_OBJECT", "MODIFY_OBJECT", "CREATE_OBJECT", "DELETE_METADATA", "MODIFY_METADATA", "CREATE_METADATA", "READ_OBJECT", "READ_METADATA", "NONE" };
+	private static final String[] PERMISSIONS_WITHOUT_NONE = { 
+			"OWN", "DELETE_OBJECT", "MODIFY_OBJECT", "CREATE_OBJECT", "DELETE_METADATA", "MODIFY_METADATA", "CREATE_METADATA", "READ_OBJECT", "READ_METADATA" };
 
+	// for iRODS 4.2.x and before
+	private static final String[] LEGACY_PERMISSIONS = {
+			"OWN", "WRITE", "READ", "NONE" };
+	private static final String[] LEGACY_PERMISSIONS_WITHOUT_NONE = {
+			"OWN", "WRITE", "READ" };
+	
 	private static final String REQUEST_OK = "OK";
 	private static final String REQUEST_ERROR = "ERROR";
 	private static final Logger logger = LoggerFactory.getLogger(PermissionsController.class);
@@ -115,14 +122,29 @@ public class PermissionsController {
 			throws DataGridException {
 
 		logger.info("Getting permission info for {}", path);
+		
+		String version = irodsServices.findIRodsVersion();
+		
+		int irods_major_version = 4;
+		int irods_minor_version = 3;
+		String[] version_parts = version.split("\\.");
+
+		if (version_parts.length >= 2) {
+			try {
+				irods_major_version = Integer.parseInt(version_parts[0]);
+				irods_minor_version = Integer.parseInt(version_parts[1]);
+			} catch (NumberFormatException e) {
+				// just leave the default
+			}
+		}
+		
+		boolean irods_43_or_greater = irods_major_version > 4 || 
+				(irods_major_version == 4 && irods_minor_version >= 3);
 
 		DataGridCollectionAndDataObject obj = null;
 		List<DataGridFilePermission> permissions;
 		List<DataGridGroupPermission> groupPermissions;
 		List<DataGridUserPermission> userPermissions;
-		List<DataGridUserBookmark> userBookmarks;
-		Set<String> groupsWithBookmarks;
-		Set<String> usersWithBookmarks;
 		boolean userCanModify = false;
 		boolean isCollection = false;
 
@@ -133,15 +155,7 @@ public class PermissionsController {
 			groupPermissions = ps.getGroupsWithPermissions(permissions);
 			userPermissions = ps.getUsersWithPermissions(permissions);
 
-			userBookmarks = uBMS.findBookmarksOnPath(path);
 			userCanModify = loggedUser.isAdmin() || ps.canLoggedUserModifyPermissionOnPath(path);
-
-			groupsWithBookmarks = new HashSet<>();
-
-			usersWithBookmarks = new HashSet<>();
-			for (DataGridUserBookmark userBookmark : userBookmarks) {
-				usersWithBookmarks.add(userBookmark.getUser().getUsername());
-			}
 
 			obj = cs.findByName(path);
 			obj.setMostPermissiveAccessForCurrentUser(
@@ -151,13 +165,39 @@ public class PermissionsController {
 			throw new DataGridException("error getting permissions", e);
 		}
 
-		model.addAttribute("usersWithBookmarks", usersWithBookmarks);
-		model.addAttribute("groupsWithBookmark", groupsWithBookmarks);
+		// For 4.2.x we must convert the values we get back from Jargon
+		// MODIFY_OBJECT -> WRITE
+		// READ_OBJECT -> READ
+		if (!irods_43_or_greater) {
+			for (DataGridUserPermission userPermission : userPermissions) {
+				if (userPermission.getPermission().equals("MODIFY_OBJECT")) {
+					userPermission.setPermission("WRITE");
+				} else if (userPermission.getPermission().equals("READ_OBJECT")) {
+					userPermission.setPermission("READ");
+				}
+			}
+			
+			for (DataGridGroupPermission groupPermission : groupPermissions) {
+				if (groupPermission.getPermission().equals("MODIFY_OBJECT")) {
+					groupPermission.setPermission("WRITE");
+				} else if (groupPermission.getPermission().equals("READ_OBJECT")) {
+					groupPermission.setPermission("READ");
+				}
+			}
+		}
+
 		model.addAttribute("groupPermissions", groupPermissions);
 		model.addAttribute("userPermissions", userPermissions);
 		model.addAttribute("userCanModify", userCanModify);
-		model.addAttribute("permissions", PERMISSIONS);
-		model.addAttribute("permissionsWithoutNone", PERMISSIONS_WITHOUT_NONE);
+		
+		// The permission list differs between 4.2.x and 4.3.x
+		if (irods_43_or_greater) {
+			model.addAttribute("permissions", PERMISSIONS);
+			model.addAttribute("permissionsWithoutNone", PERMISSIONS_WITHOUT_NONE);
+		} else {
+			model.addAttribute("permissions", LEGACY_PERMISSIONS);
+			model.addAttribute("permissionsWithoutNone", LEGACY_PERMISSIONS_WITHOUT_NONE);
+		}
 		model.addAttribute("collectionAndDataObject", obj);
 		model.addAttribute("isCollection", isCollection);
 		model.addAttribute("permissionOnCurrentPath", cs.getPermissionsForPath(path));
@@ -240,12 +280,6 @@ public class PermissionsController {
 			operationResult &= ps.setPermissionOnPath(permType, group, recursive, loggedUser.isAdmin(), path);
 		}
 
-		// Updating bookmarks for the recently-created permissions
-		if (bookmark) {
-			Set<String> bookmarks = new HashSet<String>();
-			bookmarks.add(path);
-		}
-
 		return operationResult ? REQUEST_OK : REQUEST_ERROR;
 	}
 
@@ -270,18 +304,6 @@ public class PermissionsController {
 
 		for (String username : usernames) {
 			operationResult &= ps.setPermissionOnPath(permType, username, recursive, loggedUser.isAdmin(), path);
-
-			// Updating bookmarks for the recently-created permissions
-			if (bookmark) {
-				Set<String> bookmarks = new HashSet<String>();
-				bookmarks.add(path);
-
-				// Getting list of users and updating bookmarks
-				List<DataGridUser> dataGridUsers = us.findByUsername(username);
-				if (dataGridUsers != null && !dataGridUsers.isEmpty()) {
-					uBMS.updateBookmarks(dataGridUsers.get(0), bookmarks, null);
-				}
-			}
 		}
 
 		return operationResult ? REQUEST_OK : REQUEST_ERROR;

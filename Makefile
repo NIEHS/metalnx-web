@@ -10,21 +10,33 @@ default: dockerimage
 warbuilderimage:
 	docker build -f Dockerfile.warbuilder -t myimages/metalnx-warbuilder .
 
-# this docker command uses the host user's .m2 directory
+# this docker command uses the ./local_maven_repo directory
 # to cache the maven artifacts for repeated builds
+#
+# the local_maven_repo directory keeps your personal maven
+# repository (i.e. $HOME/.m2) clean and safe from the "root" user.
 #
 # it creates the .war file in packaging/docker/
 packaging/docker/metalnx.war: warbuilderimage
 	docker run -it --rm \
 		-v "$$PWD":/usr/src \
 		-v "$$PWD"/src:/usr/src/mymaven \
-		-v "$$HOME/.m2":/root/.m2 \
+		-v "$$PWD/local_maven_repo":/root/.m2 \
 		-w /usr/src/mymaven \
 		myimages/metalnx-warbuilder \
 		mvn clean package -Dmaven.test.skip=true
 
-# this docker command builds a local docker image
+# this docker command builds a local docker image. this command
+# may result in compilation of the Java source code.
 dockerimage: packaging/docker/metalnx.war
+	docker build -t myimages/metalnx:latest .
+
+# this docker command only builds a local docker image.
+# it DOES NOT compile the Java source code.
+#
+# this command exists for developers compiling the source outside
+# of a docker container, but running the WAR file in a container.
+dockerimage_only:
 	docker build -t myimages/metalnx:latest .
 
 # this removes the .war file
@@ -35,7 +47,7 @@ clean:
 	docker run -it --rm \
 		-v "$$PWD":/usr/src \
 		-v "$$PWD"/src:/usr/src/mymaven \
-		-v "$$HOME/.m2":/root/.m2 \
+		-v "$$PWD/local_maven_repo":/root/.m2 \
 		-w /usr/src/mymaven \
 		myimages/metalnx-warbuilder \
 		mvn clean

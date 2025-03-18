@@ -91,26 +91,6 @@
                 </div>
             </div>
 
-			<!-- Apply templates succeed -->
-			<div th:if="${templatesAppliedSuccessfully}" class="col-sm-12" id="applyTemplateSuccess">
-				<div class="alert alert-success alert-dismissible text-center" role="alert">
-					<button type="button" class="close" data-dismiss="alert">
-						<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
-					</button>
-					<span th:text="#{empty.tamplate.success} "></span>
-				</div>
-			</div>
-
-			<!-- Apply templates fail -->
-			<div th:if="${templatesAppliedSuccessfully == false}" class="col-sm-12" id="applyTemplateFailure">
-				<div class="alert alert-danger alert-dismissible text-center" role="alert">
-					<button type="button" class="close" data-dismiss="alert">
-						<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
-					</button>
-					<span th:text="#{empty.tamplate.failure}"> </span>
-				</div>
-			</div>
-
 			<!-- Collection creation fail message -->
 			<div th:if="${missingPermissionError}" class="col-sm-12" id="creationErrorMessages">
 				<div class="alert alert-danger alert-dismissible text-center" role="alert">
@@ -164,11 +144,6 @@
 				<div id="templatesListPanelBody" class="row"></div>
 			</div>
 		</div>
-
-		<!-- template modal -->
-		<div class="modal fade" id="applyTemplateModal" tabindex="-1"
-			role="dialog" aria-labelledby="applyTemplateModalLabel"
-			aria-hidden="true"></div>
 
 		<!-- Copy Modal -->
 		<div class="modal fade" id="copyModal" tabindex="-1" role="dialog"
@@ -226,27 +201,7 @@
 									</p>
 								</th:block>
 							</div>
-							<div role="tabpanel" class="tab-pane" id="copyShared">
-			                	<table class="table table-hover" id="copyUserBookmarksTable">
-			                        <thead>
-			                            <tr>
-			                                <th th:text="#{bookmarks.table.file.name.label}"></th>
-			                                <th th:text="#{bookmarks.table.file.path.label}"></th>
-			                            </tr>
-			                        </thead>
-			                    </table>
-							</div>
 				
-						    <div role="tabpanel" class="tab-pane" id="copyFavorites">
-						    	<table class="table table-hover" id="copyFavoritesTable">
-			                        <thead>
-			                            <tr>
-			                                <th th:text="#{favorites.table.name.label}"></th>
-			                                <th th:text="#{favorites.table.path.label}"></th>
-			                            </tr>
-			                        </thead>
-			                    </table>
-						    </div>
 						</div>
                         <div class="col-xs-12">
                             <input type="checkbox" id="inputCopyWithMetadata" name="replica" value="1" checked="checked" title="Copy with Metadata"/>
@@ -326,27 +281,6 @@
 									</p>
 								</th:block>
 							</div>
-							<div role="tabpanel" class="tab-pane" id="moveShared">
-			                	<table class="table table-hover" id="moveUserBookmarksTable">
-			                        <thead>
-			                            <tr>
-			                                <th th:text="#{bookmarks.table.file.name.label}"></th>
-			                                <th th:text="#{bookmarks.table.file.path.label}"></th>
-			                            </tr>
-			                        </thead>
-			                    </table>
-							</div>
-	
-						    <div role="tabpanel" class="tab-pane" id="moveFavorites">
-						    	<table class="table table-hover" id="moveFavoritesTable">
-			                        <thead>
-			                            <tr>
-			                                <th th:text="#{favorites.table.name.label}"></th>
-			                                <th th:text="#{favorites.table.path.label}"></th>
-			                            </tr>
-			                        </thead>
-			                    </table>
-						    </div>
 						</div>
 					</div>
 					<div class="modal-footer">
@@ -613,13 +547,6 @@
 				    getSubDirectories([[${ currentPath }]]);
 				}
 
-				if (![[${templatesAppliedSuccessfully}]]) {
-					$("#applyTemplateSuccess").show();
-					totalCheckboxesChecked = 0;$("#selectResource option").first().addClass("hideElement");
-				}
-				else {
-					$("#applyTemplateFailure").show();
-				}
 			});
 
 
@@ -912,43 +839,6 @@
 	        	operationInProgress = false;
 	        }
 
-	        function getTemplatesToBeApplied() {
-	        	var templateIDsList = $("#templatesListTable input[name='templateCheckboxes']:checked").map(function() {
-	        		return $(this).val();
-	        	}).get().join();
-
-	        	return templateIDsList;
-	        }
-	        function goBackToTemplatesList() {
-	        	$(".template-fields-content").hide();
-	        	$(".templates-content").show();
-	        }
-
-	        function displayTemplates(response) {
-	        	$(".templates-content").remove();
-	        	$("#applyTemplateModal").html(response);
-	        	$('#applyTemplateModal').modal('show');
-			}
-
-	        function displayTemplateFields(response) {
-	        	$(".template-fields-content").remove();
-	        	$(".templates-content").hide();
-	        	$(".templates-content").after(response);
-	        	$(".template-fields-content input[name='applyToCurrentPath']").val(applyToCurrentPath);
-	        	applyToCurrentPath = false;
-			}
-
-	        function listAllTemplates() {
-	        	var url = "/metalnx/templates/listTemplatesForCollections/";
-				ajaxEncapsulation(url, "POST", null, displayTemplates, null, null);
-	        }
-
-	        function listTemplateFields() {
-	        	var templateIDsList = getTemplatesToBeApplied();
-				var url = "/metalnx/templates/listTemplateFieldsForCollections/";
-				ajaxEncapsulation(url, "POST", {templateIDsList : templateIDsList}, displayTemplateFields, null, null);
-	        }
-
 	        function goToDataObjDetails(path){
 				$("#table-loader").show();
 				$("#table-loader").nextAll().remove();
@@ -1016,18 +906,6 @@
 		            ]
 				});
 			}
-
-			//tables for the move modal
-			var moveFavoritesTable;
-			var moveUserBookmarksTable;
-			modalMoveCopyFavAndUserbookmarkDatatable('moveFavoritesTable', moveFavoritesTable, '/metalnx/favorites/favoritesPaginated/');
-			modalMoveCopyFavAndUserbookmarkDatatable('moveUserBookmarksTable', moveUserBookmarksTable, '/metalnx/userBookmarks/bookmarksPaginated/');
-
-			//tables for the copy modal
-			var copyFavoritesTable;
-			var copyUserBookmarksTable;
-			modalMoveCopyFavAndUserbookmarkDatatable('copyFavoritesTable', copyFavoritesTable, '/metalnx/favorites/favoritesPaginated/');
-			modalMoveCopyFavAndUserbookmarkDatatable('copyUserBookmarksTable', copyUserBookmarksTable, '/metalnx/userBookmarks/bookmarksPaginated/');
 
 			function modalMoveCopyGroupbookmarkDatatable(datatableId, datatableVar, urlService){
 			    datatableVar = $('#'+datatableId).DataTable( {

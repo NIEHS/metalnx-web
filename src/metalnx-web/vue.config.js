@@ -28,6 +28,9 @@ module.exports = {
    },
    gallery: {
      entry: 'src/main/javascript/gallery/main.js'
+   },
+   shoppingCart: {
+    entry: 'src/main/javascript/shoppingCart/main.js'
    }
  }
 }

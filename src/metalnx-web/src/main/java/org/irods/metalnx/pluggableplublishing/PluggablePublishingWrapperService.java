@@ -138,7 +138,6 @@ public class PluggablePublishingWrapperService {
 
 		this.publishingPluginDiscoveryService = new PublishingPluginDiscoveryService(config,
 				this.jwtManagementWrapperService.getJwtIssueService());
-
 		try {
 			publishingPluginDiscoveryService.queryEndpoints(config.getEndpointRegistryList(), publishingIndexInventory);
 		} catch (PublishingPluginUnavailableException e) {
